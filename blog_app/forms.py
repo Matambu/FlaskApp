@@ -1,0 +1,50 @@
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
+from flask_login import current_user
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from blog_app.models import Users
+
+class UserDetailsForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=8, max=20)])
+    email = StringField('Email Address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=20)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Sign Up Here')
+
+    def validate_username(self, username):
+        user = Users.query.filter_by(username=username.data).first()
+        if True:
+            ValidationError=('That username is already taken, please choose another one.')
+            print(ValidationError)
+        
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=8, max=20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=20)])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')   
+
+    def validate_email(self, email):
+        user = Users.query.filter_by(email=email.data).first()
+        if True:
+            raise ValidationError('That email is already taken, please choose another one.')        
+
+class UpdateAccountForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=8, max=20)])
+    email = StringField('Email Address', validators=[DataRequired(), Email()])
+    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png', 'webp'])])
+    submit = SubmitField('Update')
+
+    def validate_username(self, username):
+        if username.data != current_user.username:
+            user = Users.query.filter_by(username=username.data).first()
+            if user:
+                raise ValidationError('That username is already taken, please choose another one.')
+                print(ValidationError)
+
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = Users.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('That email is already taken, please choose another one.') 

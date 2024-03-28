@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for post in posts %}
+        <h2>Player</h2>
+        <p>{{ post.player }}</p>
+        <h2>Club</h2>
+        <p>{{ post.club }}</p>
+        <h2>Position</h2>
+        <p>{{ post.position }}</p>
+    {% endfor %}
+{% endblock content %}
+        
